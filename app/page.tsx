@@ -1,8 +1,9 @@
 'use client';
 
-<html lang="pt-BR"></html>
-
 import { useState, useEffect } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { ptBR } from 'date-fns/locale/pt-BR';
 
 const pastoraisPorComunidade: Record<string, string[]> = {
   'Matriz São Francisco de Assis (SFA)': [
@@ -39,6 +40,10 @@ export default function Home() {
   const [comunidadeSelecionada, setComunidadeSelecionada] = useState('');
   const [pastoralSelecionada, setPastoralSelecionada] = useState('');
   const [responsavel, setResponsavel] = useState('');
+  
+  // Estados para o DatePicker
+  const [data1, setData1] = useState<Date | null>(null);
+  const [data2, setData2] = useState<Date | null>(null);
 
   const [meusEventos, setMeusEventos] = useState<any[]>([]);
 
@@ -61,6 +66,10 @@ export default function Home() {
     data.comunidade = comunidadeSelecionada;
     data.pastoral = pastoralSelecionada;
     data.responsavel = responsavel;
+    
+    // Converte as datas do DatePicker para o formato DD/MM/AAAA antes de enviar
+    if (data1) data.data1 = data1.toLocaleDateString('pt-BR');
+    if (data2) data.data2 = data2.toLocaleDateString('pt-BR');
 
     try {
       const response = await fetch('/api/salvar-evento', {
@@ -77,6 +86,8 @@ export default function Home() {
         localStorage.setItem('historicoEventosParoquia', JSON.stringify(novaLista));
 
         form.reset();
+        setData1(null);
+        setData2(null);
       } else {
         setMensagem('Erro ao salvar o evento na planilha.');
       }
@@ -92,7 +103,6 @@ export default function Home() {
   const pastoraisAtuais = pastoraisPorComunidade[comunidadeSelecionada] || [];
   const podeAvancar = comunidadeSelecionada !== '' && pastoralSelecionada !== '' && responsavel.trim() !== '';
 
-  // Filtra os eventos para mostrar apenas os que pertencem à pessoa que digitou o nome na Etapa 1
   const eventosFiltrados = meusEventos.filter(
     (evento) => evento.responsavel?.trim().toLowerCase() === responsavel.trim().toLowerCase()
   );
@@ -101,7 +111,6 @@ export default function Home() {
     <div className="min-h-screen bg-[#FDFBF7] py-8 px-4 sm:px-6 lg:px-8 font-sans text-stone-800">
       <main className="max-w-3xl mx-auto">
         
-        {/* Cabeçalho da Página */}
         <div className="text-center mb-10">
           <h1 className="text-4xl font-extrabold text-amber-900 uppercase tracking-widest drop-shadow-sm">Agenda 2026</h1>
           <div className="h-1 w-24 bg-amber-700 mx-auto mt-4 rounded-full opacity-80"></div>
@@ -178,7 +187,6 @@ export default function Home() {
         {etapa === 2 && (
           <div className="flex flex-col gap-8 animate-fade-in">
             
-            {/* Card de Resumo da Etapa 1 */}
             <div className="bg-gradient-to-r from-amber-900 to-amber-800 p-6 rounded-2xl shadow-lg text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
               <div className="absolute top-0 right-0 opacity-10 text-9xl -mt-10 -mr-4 pointer-events-none">📝</div>
               <div className="z-10">
@@ -197,7 +205,6 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Formulário Principal Estilo Papel */}
             <form onSubmit={handleSubmit} className="bg-white p-8 md:p-10 rounded-2xl shadow-xl border border-stone-100 flex flex-col gap-8">
               
               <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-6">
@@ -207,22 +214,39 @@ export default function Home() {
               
               <div className="flex flex-col gap-8 mt-2 bg-[#FAF9F6] p-6 rounded-xl border border-stone-100 shadow-inner">
                 
-                {/* Bloco Data */}
+                {/* Bloco Data com DatePicker */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
                   <label className="font-bold text-amber-900 text-lg uppercase tracking-wide w-24 sm:shrink-0">Data:</label>
                   <div className="flex flex-col sm:flex-row gap-6 w-full">
                     <div className="flex items-center gap-3 w-full bg-white px-4 py-2 rounded-lg border border-stone-200 focus-within:border-amber-700 transition-colors">
                       <span className="text-sm font-bold text-stone-400 uppercase">De</span>
-                      <input type="date" name="data1" required className="outline-none bg-transparent w-full font-medium text-stone-700 cursor-pointer" />
+                      <DatePicker
+                        selected={data1}
+                        onChange={(date: Date | null) => setData1(date)}
+                        dateFormat="dd/MM/yyyy"
+                        locale={ptBR}
+                        name="data1"
+                        required
+                        placeholderText="DD/MM/AAAA"
+                        className="outline-none bg-transparent w-full font-medium text-stone-700 cursor-pointer"
+                      />
                     </div>
                     <div className="flex items-center gap-3 w-full bg-white px-4 py-2 rounded-lg border border-stone-200 focus-within:border-amber-700 transition-colors">
                       <span className="text-sm font-bold text-stone-400 uppercase">Até</span>
-                      <input type="date" name="data2" className="outline-none bg-transparent w-full font-medium text-stone-700 cursor-pointer" />
+                      <DatePicker
+                        selected={data2}
+                        onChange={(date: Date | null) => setData2(date)}
+                        dateFormat="dd/MM/yyyy"
+                        locale={ptBR}
+                        name="data2"
+                        placeholderText="DD/MM/AAAA"
+                        className="outline-none bg-transparent w-full font-medium text-stone-700 cursor-pointer"
+                      />
                     </div>
                   </div>
                 </div>
 
-                {/* Bloco Horário */}
+                {/* Bloco Horário com Máscara */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
                   <label className="font-bold text-amber-900 text-lg uppercase tracking-wide w-24 sm:shrink-0">Horário:</label>
                   <div className="flex flex-col sm:flex-row gap-6 w-full">
@@ -235,16 +259,15 @@ export default function Home() {
                         placeholder="00:00"
                         maxLength={5}
                         onChange={(e) => {
-                          // Remove tudo que não for número
                           let v = e.target.value.replace(/\D/g, '');
-                          // Coloca os dois pontos automaticamente
                           if (v.length >= 3) {
                             v = v.slice(0, 2) + ':' + v.slice(2, 4);
                           }
                           e.target.value = v;
                         }}
                         className="outline-none bg-transparent w-full font-medium text-stone-700 cursor-pointer" 
-                      />                    </div>
+                      />                    
+                    </div>
                     <div className="flex items-center gap-3 w-full bg-white px-4 py-2 rounded-lg border border-stone-200 focus-within:border-amber-700 transition-colors">
                       <span className="text-sm font-bold text-stone-400 uppercase">Às</span>
                       <input 
@@ -254,9 +277,7 @@ export default function Home() {
                         placeholder="00:00"
                         maxLength={5}
                         onChange={(e) => {
-                          // Remove tudo que não for número
                           let v = e.target.value.replace(/\D/g, '');
-                          // Coloca os dois pontos automaticamente
                           if (v.length >= 3) {
                             v = v.slice(0, 2) + ':' + v.slice(2, 4);
                           }
@@ -294,7 +315,6 @@ export default function Home() {
               )}
             </form>
 
-            {/* Recibo (Tickets) Estilizado - Agora Filtrado por Responsável */}
             {eventosFiltrados.length > 0 && (
               <div className="mt-8">
                 <div className="flex flex-col items-center mb-6">
@@ -310,7 +330,6 @@ export default function Home() {
                         <h3 className="font-extrabold text-stone-800 text-xl mb-1">{evento.eventoNome}</h3>
                         <p className="text-sm font-semibold text-amber-700">{evento.local}</p>
                         
-                        {/* Etiqueta de Origem/Responsável */}
                         <div className="mt-2 inline-flex items-center gap-1 bg-amber-50 border border-amber-100 text-amber-800 text-[10px] uppercase font-bold px-2 py-1 rounded shadow-sm">
                           <span>👤</span> {evento.responsavel}
                         </div>
@@ -319,7 +338,7 @@ export default function Home() {
                       <div className="flex flex-col gap-2 bg-stone-50 p-3 rounded-xl border border-stone-100 min-w-[200px]">
                         <div className="flex items-center gap-2 text-sm text-stone-700 font-medium">
                           <span className="bg-stone-200 p-1.5 rounded-md text-xs">📅</span>
-                          <span>{evento.data1.split('-').reverse().join('/')} {evento.data2 && `a ${evento.data2.split('-').reverse().join('/')}`}</span>
+                          <span>{evento.data1} {evento.data2 && `a ${evento.data2}`}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-stone-700 font-medium">
                           <span className="bg-stone-200 p-1.5 rounded-md text-xs">⏰</span>
