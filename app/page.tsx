@@ -1,5 +1,7 @@
 'use client';
 
+<html lang="pt-BR"></html>
+
 import { useState, useEffect } from 'react';
 
 const pastoraisPorComunidade: Record<string, string[]> = {
@@ -226,11 +228,42 @@ export default function Home() {
                   <div className="flex flex-col sm:flex-row gap-6 w-full">
                     <div className="flex items-center gap-3 w-full bg-white px-4 py-2 rounded-lg border border-stone-200 focus-within:border-amber-700 transition-colors">
                       <span className="text-sm font-bold text-stone-400 uppercase">Das</span>
-                      <input type="time" name="hora1" required className="outline-none bg-transparent w-full font-medium text-stone-700 cursor-pointer" />
-                    </div>
+                      <input 
+                        type="text" 
+                        id="hora1" 
+                        name="hora1" 
+                        placeholder="00:00"
+                        maxLength={5}
+                        onChange={(e) => {
+                          // Remove tudo que não for número
+                          let v = e.target.value.replace(/\D/g, '');
+                          // Coloca os dois pontos automaticamente
+                          if (v.length >= 3) {
+                            v = v.slice(0, 2) + ':' + v.slice(2, 4);
+                          }
+                          e.target.value = v;
+                        }}
+                        className="outline-none bg-transparent w-full font-medium text-stone-700 cursor-pointer" 
+                      />                    </div>
                     <div className="flex items-center gap-3 w-full bg-white px-4 py-2 rounded-lg border border-stone-200 focus-within:border-amber-700 transition-colors">
                       <span className="text-sm font-bold text-stone-400 uppercase">Às</span>
-                      <input type="time" name="hora2" className="outline-none bg-transparent w-full font-medium text-stone-700 cursor-pointer" />
+                      <input 
+                        type="text" 
+                        id="hora2" 
+                        name="hora2" 
+                        placeholder="00:00"
+                        maxLength={5}
+                        onChange={(e) => {
+                          // Remove tudo que não for número
+                          let v = e.target.value.replace(/\D/g, '');
+                          // Coloca os dois pontos automaticamente
+                          if (v.length >= 3) {
+                            v = v.slice(0, 2) + ':' + v.slice(2, 4);
+                          }
+                          e.target.value = v;
+                        }}
+                        className="outline-none bg-transparent w-full font-medium text-stone-700 cursor-pointer" 
+                      />
                     </div>
                   </div>
                 </div>
