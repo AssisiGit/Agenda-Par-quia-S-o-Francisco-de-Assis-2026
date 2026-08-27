@@ -1,30 +1,42 @@
-import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { google } from 'googleapis';
 import { JWT } from 'google-auth-library';
 
 export async function POST(request) {
   try {
+    // Aqui pegamos os dados e chamamos de 'body'
     const body = await request.json();
 
+    // Faz a autenticação com as chaves do seu arquivo .env
     const serviceAccountAuth = new JWT({
       email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
 
-    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID, serviceAccountAuth);
-    await doc.loadInfo(); 
-    const sheet = doc.sheetsByIndex[0];
+    // Inicializa a ferramenta oficial do Google Sheets
+    const sheets = google.sheets({ version: 'v4', auth: serviceAccountAuth });
 
-    await sheet.addRow({
-      'Comunidade': body.comunidade,
-      'Pastoral': body.pastoral,
-      'Responsavel': body.responsavel,
-      'Evento_Nome': body.eventoNome,
-      'Data 1': body.data1,
-      'Data 2': body.data2,
-      'Hora 1': body.hora1,
-      'Hora 2': body.hora2,
-      'Local': body.local
+    // Envia os dados (usando append e INSERT_ROWS para não apagar o antigo)
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: process.env.GOOGLE_SHEET_ID,
+      range: 'Página1!A:I', // Verifique se a sua aba original se chama Página1 mesmo
+      valueInputOption: 'USER_ENTERED',
+      insertDataOption: 'INSERT_ROWS',
+      requestBody: {
+        values: [
+          [
+            body.comunidade,  // Trocamos 'data.' por 'body.' para puxar a variável certa
+            body.pastoral, 
+            body.responsavel, 
+            body.eventoNome, 
+            body.data1, 
+            body.data2, 
+            body.hora1, 
+            body.hora2, 
+            body.local
+          ],
+        ],
+      },
     });
 
     return Response.json({ message: 'Evento salvo com sucesso!' }, { status: 200 });
