@@ -29,6 +29,11 @@ const pastoraisPorComunidade: Record<string, string[]> = {
   'Santa Clara de Assis (SCA)': [
     'Animação', 'MESCE\'s', 'Obra Social', 'Pastoral da Acolhida', 'Pastoral da Música',
     'Pastoral do Dízimo', 'Pastoral Litúrgica', 'Secretaria', 'Trabalhos Manuais'
+  ],
+  'Conselho de Pastoral Paroquial CPP': [
+    'Administrador Paroquial - Padre', 'Coordenador do CPP', 'Pastoral da Liturgia Paroquial', 'Pastoral do Dízimo Paroquial', 'MESCE Paroquial',
+    'Pastoral do Batismo Paroquial', 'Pastoral Familiar Paroquial', 'Encontro de Caisais com Crito - ECC', 'Pastoral da Crisma Paroquial',
+    'Pastoral dos Coroinhas Paroquial', 'Catecumenato Paroquial', 'Encontro de Jovens com Cristo - EJC', 'Pastoral da Música Paroquial',
   ]
 };
 
