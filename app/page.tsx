@@ -146,6 +146,7 @@ export default function Home() {
                     <option value="São Pedro Pescador (SPP)">São Pedro Pescador (SPP)</option>
                     <option value="Sagrado Coração de Jesus (SCJ)">Sagrado Coração de Jesus (SCJ)</option>
                     <option value="Santa Clara de Assis (SCA)">Santa Clara de Assis (SCA)</option>
+                    <option value="Conselho de Pastoral Paroquial CPP">Conselho de Pastoral Paroquial CPP</option>
                   </select>
                 </div>
 
